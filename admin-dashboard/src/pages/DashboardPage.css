@@ -48,6 +48,29 @@
   overflow: hidden;
 }
 
+/* ── Floating Energy Orbs (Background Magic) ── */
+.dashboard-container::before {
+  content: '';
+  position: absolute;
+  top: -50%; left: -50%; width: 200%; height: 200%;
+  background-image: 
+    radial-gradient(circle at 25% 25%, rgba(99, 102, 241, 0.08) 0%, transparent 20%),
+    radial-gradient(circle at 75% 75%, rgba(6, 182, 212, 0.08) 0%, transparent 20%),
+    radial-gradient(circle at 50% 50%, rgba(236, 72, 153, 0.05) 0%, transparent 30%);
+  animation: rotateOrbs 30s linear infinite;
+  z-index: 0;
+  pointer-events: none;
+}
+
+[data-theme="light"] .dashboard-container::before {
+  opacity: 0.5;
+}
+
+@keyframes rotateOrbs {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
 @keyframes gradientBG {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
@@ -206,6 +229,8 @@
   padding: 40px;
   overflow-y: auto;
   max-width: calc(100% - 280px);
+  position: relative;
+  z-index: 1;
 }
 
 .content-header {
@@ -373,12 +398,48 @@
   position: relative;
   overflow: hidden;
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  animation: cinematicEnter 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  opacity: 0;
+  transform: translateY(30px) scale(0.95);
 }
 
-.stat-card:hover {
+.stat-card:nth-child(1) { animation-delay: 0.1s; }
+.stat-card:nth-child(2) { animation-delay: 0.2s; }
+.stat-card:nth-child(3) { animation-delay: 0.3s; }
+.stat-card:nth-child(4) { animation-delay: 0.4s; }
+
+/* ── Neon Animated Borders ── */
+@property --angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.stat-card::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 22px;
+  background: conic-gradient(from var(--angle), transparent 60%, var(--primary) 100%);
+  z-index: -1;
+  animation: spinBorder 3s linear infinite;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.stat-card:hover::after, .stat-card:active::after {
+  opacity: 1;
+}
+
+@keyframes spinBorder {
+  0% { --angle: 0deg; }
+  100% { --angle: 360deg; }
+}
+
+.stat-card:hover, .stat-card:active {
   transform: translateY(-8px) scale(1.02);
   background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.15);
+  border-color: transparent;
 }
 
 .stat-card.blue:hover { box-shadow: 0 15px 35px rgba(99, 102, 241, 0.4), inset 0 0 20px rgba(99, 102, 241, 0.1); }
@@ -427,11 +488,23 @@
   padding: 32px;
   margin-bottom: 24px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-  transition: box-shadow 0.3s ease;
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+  animation: cinematicEnter 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  opacity: 0;
+  transform: translateY(40px);
+  animation-delay: 0.3s;
 }
 
 .panel:hover {
   box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3);
+  transform: translateY(-2px);
+}
+
+@keyframes cinematicEnter {
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .panel-header {
