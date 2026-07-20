@@ -185,13 +185,19 @@ export default function DashboardPage() {
   const handleAddStudent = async (e) => {
     e.preventDefault();
     try {
-      await axiosClient.post('/students/', studentForm);
+      const payload = {
+        ...studentForm,
+        room: parseInt(studentForm.room)
+      };
+      await axiosClient.post('/students/', payload);
       showNotification('تم تسكين الطالب بنجاح!');
       setShowModal(null);
       setStudentForm({ name: '', phone: '', room: '', status: 'active' });
       fetchData();
     } catch (err) {
-      showNotification('فشل تسكين الطالب.', false);
+      console.error("Add student error:", err.response?.data);
+      const errorMsg = err.response?.data?.room ? 'تأكد من اختيار الغرفة بشكل صحيح.' : 'فشل تسكين الطالب. تأكد من البيانات المدخلة.';
+      showNotification(errorMsg, false);
     }
   };
 
