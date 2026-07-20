@@ -369,6 +369,22 @@ export default function DashboardPage() {
            (!statusFilter || s.status === statusFilter);
   });
 
+  // ── تحضير بيانات الرسوم البيانية (Charts Data) ──
+  const statusData = [
+    { name: 'مدفوعة', value: invoices.filter(i => i.status === 'paid').length, color: '#10b981' },
+    { name: 'معتمدة', value: invoices.filter(i => i.status === 'approved').length, color: '#6366f1' },
+    { name: 'معلقة', value: invoices.filter(i => i.status === 'pending').length, color: '#f59e0b' }
+  ].filter(d => d.value > 0);
+
+  const topConsumers = [...invoices]
+    .sort((a, b) => b.consumption - a.consumption)
+    .slice(0, 5)
+    .map(inv => ({
+      room: inv.room_qr,
+      consumption: inv.consumption,
+      amount: inv.final_amount
+    }));
+
   return (
     <div className="dashboard-container">
       {/* ── الاحتفال (Confetti) ── */}
