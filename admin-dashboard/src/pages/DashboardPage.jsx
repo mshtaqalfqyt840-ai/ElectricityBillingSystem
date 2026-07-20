@@ -35,6 +35,7 @@ export default function DashboardPage() {
   const [showConfetti, setShowConfetti] = useState(false);
   const { width, height } = useWindowSize();
   const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark');
+  const [showFabMenu, setShowFabMenu] = useState(false);
 
   // تطبيق السمة (Theme)
   useEffect(() => {
@@ -632,11 +633,11 @@ export default function DashboardPage() {
                         <tbody>
                           {invoices.slice(0, 5).map(inv => (
                             <tr key={inv.id}>
-                              <td><strong>{inv.room_qr}</strong></td>
-                              <td>{inv.consumption || '0'} ك.و.س</td>
-                              <td>{inv.final_amount} ريال</td>
-                              <td>{getInvoiceStatusBadge(inv.status)}</td>
-                              <td>{new Date(inv.created_at).toLocaleDateString('ar-SA')}</td>
+                              <td data-label="رقم الغرفة"><strong>{inv.room_qr}</strong></td>
+                              <td data-label="الاستهلاك (ك.و.س)">{inv.consumption || '0'} ك.و.س</td>
+                              <td data-label="المبلغ الإجمالي">{inv.final_amount} ريال</td>
+                              <td data-label="الحالة">{getInvoiceStatusBadge(inv.status)}</td>
+                              <td data-label="تاريخ الفاتورة">{new Date(inv.created_at).toLocaleDateString('ar-SA')}</td>
                             </tr>
                           ))}
                           {invoices.length === 0 && (
@@ -673,9 +674,9 @@ export default function DashboardPage() {
                     <tbody>
                       {buildings.map(b => (
                         <tr key={b.id}>
-                          <td>#{b.id}</td>
-                          <td><strong>{b.name}</strong></td>
-                          <td><span className="code-badge">{b.code}</span></td>
+                          <td data-label="رقم المعرف">#{b.id}</td>
+                          <td data-label="اسم المبنى"><strong>{b.name}</strong></td>
+                          <td data-label="رمز المبنى الفريد"><span className="code-badge">{b.code}</span></td>
                         </tr>
                       ))}
                       {buildings.length === 0 && (
@@ -727,10 +728,10 @@ export default function DashboardPage() {
                     <tbody>
                       {filteredRooms.map(r => (
                         <tr key={r.id}>
-                          <td>{r.building_name}</td>
-                          <td><strong>الغرفة {r.room_number}</strong></td>
-                          <td><code className="qr-text">{r.qr_code}</code></td>
-                          <td>
+                          <td data-label="المبنى">{r.building_name}</td>
+                          <td data-label="رقم الغرفة"><strong>الغرفة {r.room_number}</strong></td>
+                          <td data-label="رمز الاستجابة QR Code"><code className="qr-text">{r.qr_code}</code></td>
+                          <td data-label="ملصق الباب الذكي">
                             <button 
                               className="btn btn-secondary btn-xs"
                               onClick={() => { setActiveQR(r.qr_code); setShowModal('qr'); }}
@@ -792,15 +793,15 @@ export default function DashboardPage() {
                     <tbody>
                       {filteredStudents.map(s => (
                         <tr key={s.id}>
-                          <td><strong>{s.name}</strong></td>
-                          <td>{s.phone}</td>
-                          <td>{s.room_qr}</td>
-                          <td>
+                          <td data-label="اسم الطالب"><strong>{s.name}</strong></td>
+                          <td data-label="رقم الهاتف">{s.phone}</td>
+                          <td data-label="الغرفة المخصصة">{s.room_qr}</td>
+                          <td data-label="الحالة">
                             <span className={`status-dot ${s.status === 'active' ? 'active' : 'left'}`}>
                               {s.status === 'active' ? 'نشط بالسكن' : 'غادر السكن'}
                             </span>
                           </td>
-                          <td>{new Date(s.created_at).toLocaleDateString('ar-SA')}</td>
+                          <td data-label="تاريخ التسكين">{new Date(s.created_at).toLocaleDateString('ar-SA')}</td>
                         </tr>
                       ))}
                       {filteredStudents.length === 0 && (
@@ -861,23 +862,23 @@ export default function DashboardPage() {
                     <tbody>
                       {filteredInvoices.map(inv => (
                         <tr key={inv.id}>
-                          <td><strong>{inv.room_qr}</strong></td>
-                          <td>{inv.reading_old} ك.و.س</td>
-                          <td>{inv.reading_new} ك.و.س</td>
-                          <td><span className="consumption-text">{inv.consumption} ك.و.س</span></td>
-                          <td>
+                          <td data-label="رقم الغرفة"><strong>{inv.room_qr}</strong></td>
+                          <td data-label="القراءة القديمة">{inv.reading_old} ك.و.س</td>
+                          <td data-label="القراءة الجديدة">{inv.reading_new} ك.و.س</td>
+                          <td data-label="الاستهلاك"><span className="consumption-text">{inv.consumption} ك.و.س</span></td>
+                          <td data-label="السعر الإجمالي">
                             <div className="price-details">
                               <strong>{inv.final_amount} ريال</strong>
                               <small>السابق: {inv.previous_debt} ريال</small>
                             </div>
                           </td>
-                          <td>
+                          <td data-label="سجل الفاتورة">
                             <div className="user-logs">
                               <small>بواسطة: {inv.created_by_username || 'غير محدد'}</small>
                               <small>المعتمد: {inv.approved_by_username || 'معلقة'}</small>
                             </div>
                           </td>
-                          <td>
+                          <td data-label="مهلة السداد">
                             {inv.status !== 'paid' ? (
                               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                                 <PaymentCountdown 
@@ -894,7 +895,7 @@ export default function DashboardPage() {
                               <span style={{ color: 'var(--text-muted)' }}>-</span>
                             )}
                           </td>
-                          <td>
+                          <td data-label="الحالة والأكشن">
                             <div className="action-cell">
                               {getInvoiceStatusBadge(inv.status)}
                               
@@ -960,10 +961,10 @@ export default function DashboardPage() {
                     <tbody>
                       {usersList.map(u => (
                         <tr key={u.id}>
-                          <td>#{u.id}</td>
-                          <td><strong>{u.username}</strong></td>
-                          <td><span className={`role-badge ${u.role}`}>{getRoleLabel(u.role)}</span></td>
-                          <td>{new Date(u.created_at).toLocaleDateString('ar-SA')}</td>
+                          <td data-label="المعرف">#{u.id}</td>
+                          <td data-label="اسم المستخدم"><strong>{u.username}</strong></td>
+                          <td data-label="الدور الوظيفي"><span className={`role-badge ${u.role}`}>{getRoleLabel(u.role)}</span></td>
+                          <td data-label="تاريخ الإنشاء">{new Date(u.created_at).toLocaleDateString('ar-SA')}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -1026,10 +1027,10 @@ export default function DashboardPage() {
                         <tbody>
                           {complaints.map(c => (
                             <tr key={c.id}>
-                              <td><strong>{c.student_name}</strong><br/><small>{c.room_qr}</small></td>
-                              <td><strong>{c.subject}</strong><br/><small style={{color: 'var(--text-muted)'}}>{c.message}</small></td>
-                              <td>{new Date(c.created_at).toLocaleDateString('ar-SA')}</td>
-                              <td>
+                              <td data-label="الطالب والغرفة"><strong>{c.student_name}</strong><br/><small>{c.room_qr}</small></td>
+                              <td data-label="الموضوع"><strong>{c.subject}</strong><br/><small style={{color: 'var(--text-muted)'}}>{c.message}</small></td>
+                              <td data-label="التاريخ">{new Date(c.created_at).toLocaleDateString('ar-SA')}</td>
+                              <td data-label="الحالة والأكشن">
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                                   <span className={`badge badge-${c.status === 'new' ? 'pending' : c.status === 'processing' ? 'warning' : 'paid'}`}>
                                     {c.status === 'new' ? 'جديدة' : c.status === 'processing' ? 'قيد المعالجة' : 'مغلقة'}
@@ -1062,6 +1063,28 @@ export default function DashboardPage() {
             )}
           </div>
         )}
+        
+        {/* ── الزر العائم للعمليات السريعة (FAB) ── */}
+        <div className="fab-container">
+          <div className={`fab-menu ${showFabMenu ? 'active' : ''}`}>
+            {user?.role === 'admin' && (
+              <>
+                <button className="fab-item" onClick={() => { setShowFabMenu(false); setShowModal('building'); }} data-label="مبنى جديد">🏢</button>
+                <button className="fab-item" onClick={() => { setShowFabMenu(false); setShowModal('room'); }} data-label="غرفة جديدة">🔑</button>
+                <button className="fab-item" onClick={() => { setShowFabMenu(false); setShowModal('student'); }} data-label="تسكين طالب">👥</button>
+              </>
+            )}
+            {(user?.role === 'delegate' || user?.role === 'admin') && (
+              <button className="fab-item" onClick={() => { setShowFabMenu(false); setShowModal('invoice'); }} data-label="فاتورة جديدة">📝</button>
+            )}
+          </div>
+          <button className="fab-button" onClick={() => setShowFabMenu(!showFabMenu)}>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={showFabMenu ? 'rotate' : ''}>
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+          </button>
+        </div>
       </main>
 
       {/* ── 🔘 نافذة إضافة مبنى جديدة 🔘 ── */}
