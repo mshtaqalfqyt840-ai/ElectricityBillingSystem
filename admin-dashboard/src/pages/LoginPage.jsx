@@ -140,7 +140,10 @@ export default function LoginPage() {
         </form>
 
         <div className="login-footer">
-          <p>© 2026 نظام إدارة الفواتير الكهربائية</p>
+          <div className="developer-badge" style={{ marginTop: '20px', padding: '15px', background: 'rgba(255,255,255,0.05)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)', textAlign: 'center' }}>
+            <span style={{ display: 'block', fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '5px' }}>تطوير وإشراف: <strong style={{ color: 'var(--primary)', fontSize: '16px' }}>مشتاق الفقيه</strong></span>
+            <span style={{ display: 'block', fontSize: '12px', color: 'var(--text-muted)' }}>📞 +967775336886 | 📍 صنعاء</span>
+          </div>
         </div>
       </div>
     </div>

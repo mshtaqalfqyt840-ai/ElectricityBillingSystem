@@ -466,6 +466,12 @@ export default function DashboardPage() {
           <button onClick={handleLogout} className="logout-button">
             🚪 تسجيل الخروج
           </button>
+          
+          <div className="developer-badge" style={{ marginTop: '20px', padding: '12px', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)', textAlign: 'center' }}>
+            <span style={{ display: 'block', fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '4px' }}>تطوير: <strong style={{ color: 'var(--primary)' }}>مشتاق الفقيه</strong></span>
+            <span style={{ display: 'block', fontSize: '11px', color: 'var(--text-muted)' }} dir="ltr">+967 775 336 886</span>
+            <span style={{ display: 'block', fontSize: '11px', color: 'var(--text-muted)' }}>صنعاء</span>
+          </div>
         </div>
       </aside>
 
