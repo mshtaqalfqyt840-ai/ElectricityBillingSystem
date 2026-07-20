@@ -10,6 +10,7 @@ import Confetti from 'react-confetti';
 import { useWindowSize } from 'react-use';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
 import * as XLSX from 'xlsx';
+import PrintableReceipt from '../components/PrintableReceipt';
 import './DashboardPage.css';
 
 export default function DashboardPage() {
@@ -68,6 +69,10 @@ export default function DashboardPage() {
   const [buildingFilter, setBuildingFilter] = useState('');
   const [roomFilter, setRoomFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+
+  // حالة الطباعة
+  const [invoiceToPrint, setInvoiceToPrint] = useState(null);
+  const [printType, setPrintType] = useState('invoice');
 
   useEffect(() => {
     fetchData();
@@ -281,6 +286,14 @@ export default function DashboardPage() {
     } catch (err) {
       showNotification('فشل تسجيل دفع الفاتورة.', false);
     }
+  };
+
+  const handlePrintInvoice = (inv, type) => {
+    setInvoiceToPrint(inv);
+    setPrintType(type);
+    setTimeout(() => {
+      window.print();
+    }, 200);
   };
 
   const handleSubmitComplaint = async (e) => {
@@ -850,10 +863,10 @@ export default function DashboardPage() {
                     <thead>
                       <tr>
                         <th>رقم الغرفة</th>
-                        <th>القراءة القديمة</th>
-                        <th>القراءة الجديدة</th>
-                        <th>الاستهلاك</th>
-                        <th>السعر الإجمالي</th>
+                        <th>القراءة السابقة</th>
+                        <th>القراءة الحالية</th>
+                        <th>فارق القراءة</th>
+                        <th>تفاصيل المبلغ</th>
                         <th>سجل الفاتورة</th>
                         <th>مهلة السداد</th>
                         <th>الحالة والأكشن</th>
@@ -863,13 +876,27 @@ export default function DashboardPage() {
                       {filteredInvoices.map(inv => (
                         <tr key={inv.id}>
                           <td data-label="رقم الغرفة"><strong>{inv.room_qr}</strong></td>
-                          <td data-label="القراءة القديمة">{inv.reading_old} ك.و.س</td>
-                          <td data-label="القراءة الجديدة">{inv.reading_new} ك.و.س</td>
-                          <td data-label="الاستهلاك"><span className="consumption-text">{inv.consumption} ك.و.س</span></td>
-                          <td data-label="السعر الإجمالي">
-                            <div className="price-details">
-                              <strong>{inv.final_amount} ريال</strong>
-                              <small>السابق: {inv.previous_debt} ريال</small>
+                          <td data-label="القراءة السابقة">{inv.reading_old} ك.و.س</td>
+                          <td data-label="القراءة الحالية">{inv.reading_new} ك.و.س</td>
+                          <td data-label="فارق القراءة"><span className="consumption-text">{inv.consumption} ك.و.س</span></td>
+                          <td data-label="تفاصيل المبلغ">
+                            <div className="price-details" style={{ display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '0.85rem' }}>
+                              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <span>المبلغ المستحق:</span>
+                                <strong>{parseFloat(inv.final_amount) - 300 - parseFloat(inv.previous_debt)} ريال</strong>
+                              </div>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-muted)' }}>
+                                <span>رسوم الخدمات:</span>
+                                <span>300 ريال</span>
+                              </div>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-muted)' }}>
+                                <span>الرصيد:</span>
+                                <span>{inv.previous_debt} ريال</span>
+                              </div>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid var(--border-color)', paddingTop: '4px', marginTop: '2px' }}>
+                                <span>الإجمالي:</span>
+                                <strong style={{ color: 'var(--primary-color)' }}>{inv.final_amount} ريال</strong>
+                              </div>
                             </div>
                           </td>
                           <td data-label="سجل الفاتورة">
@@ -914,6 +941,24 @@ export default function DashboardPage() {
                                   className="btn btn-success btn-xs"
                                 >
                                   💳 سداد
+                                </button>
+                              )}
+                              
+                              {/* أزرار الطباعة */}
+                              {inv.status !== 'paid' && (
+                                <button 
+                                  onClick={() => handlePrintInvoice(inv, 'invoice')}
+                                  className="btn btn-secondary btn-xs"
+                                >
+                                  🖨️ طباعة الفاتورة
+                                </button>
+                              )}
+                              {inv.status === 'paid' && (
+                                <button 
+                                  onClick={() => handlePrintInvoice(inv, 'receipt')}
+                                  className="btn btn-primary btn-xs"
+                                >
+                                  🖨️ طباعة السند
                                 </button>
                               )}
                               

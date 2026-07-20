@@ -4,6 +4,7 @@ import axiosClient from '../api/axiosClient';
 import PaymentCountdown from '../components/PaymentCountdown';
 import ElectronicPaymentForm from '../components/ElectronicPaymentForm';
 import PricingTransparencyPanel from '../components/PricingTransparencyPanel';
+import PrintableReceipt from '../components/PrintableReceipt';
 import './RoomPaymentPage.css';
 
 export default function RoomPaymentPage() {
@@ -63,6 +64,12 @@ export default function RoomPaymentPage() {
   const { room, invoice } = data;
   const isPaid = invoice.status === 'paid';
 
+  const handlePrint = () => {
+    setTimeout(() => {
+      window.print();
+    }, 200);
+  };
+
   return (
     <div className="payment-page-container">
       <header className="payment-header">
@@ -98,7 +105,7 @@ export default function RoomPaymentPage() {
               <span className="value">{new Date(invoice.created_at).toLocaleDateString('ar-SA')}</span>
             </div>
             <div className="detail-item">
-              <span className="label">القراءة القديمة</span>
+              <span className="label">القراءة السابقة</span>
               <span className="value">{invoice.reading_old} ك.و.س</span>
             </div>
             <div className="detail-item">
@@ -106,11 +113,19 @@ export default function RoomPaymentPage() {
               <span className="value">{invoice.reading_new} ك.و.س</span>
             </div>
             <div className="detail-item highlight">
-              <span className="label">حجم الاستهلاك</span>
+              <span className="label">فارق القراءة</span>
               <span className="value">{invoice.consumption} ك.و.س</span>
             </div>
             <div className="detail-item">
-              <span className="label">الديون السابقة</span>
+              <span className="label">المبلغ المستحق</span>
+              <span className="value">{parseFloat(invoice.final_amount) - 300 - parseFloat(invoice.previous_debt)} ريال</span>
+            </div>
+            <div className="detail-item">
+              <span className="label">رسوم الخدمات</span>
+              <span className="value">300 ريال</span>
+            </div>
+            <div className="detail-item">
+              <span className="label">الرصيد</span>
               <span className="value">{invoice.previous_debt} ريال</span>
             </div>
           </div>
@@ -119,6 +134,26 @@ export default function RoomPaymentPage() {
             <h3>المبلغ المطلوب سداده</h3>
             <div className="total-amount">
               {parseFloat(invoice.final_amount) + parseFloat(invoice.overdue_fine || 0)} <small>ريال</small>
+            </div>
+            
+            <div style={{ marginTop: '15px' }}>
+              {!isPaid ? (
+                <button 
+                  onClick={handlePrint}
+                  className="btn btn-secondary"
+                  style={{ width: '100%', padding: '10px', borderRadius: '8px', cursor: 'pointer', border: '1px solid var(--border-color)', background: 'rgba(255,255,255,0.05)', color: 'var(--text-primary)' }}
+                >
+                  🖨️ طباعة الفاتورة
+                </button>
+              ) : (
+                <button 
+                  onClick={handlePrint}
+                  className="btn btn-primary"
+                  style={{ width: '100%', padding: '10px', borderRadius: '8px', cursor: 'pointer', background: '#10b981', color: 'white', border: 'none' }}
+                >
+                  🖨️ طباعة سند القبض
+                </button>
+              )}
             </div>
           </div>
 
@@ -136,6 +171,9 @@ export default function RoomPaymentPage() {
       <footer className="payment-footer">
         <p>© 2026 جميع الحقوق محفوظة لجهة السكن</p>
       </footer>
+      
+      {/* ── 🖨️ مخفي للطباعة 🖨️ ── */}
+      <PrintableReceipt invoice={invoice} type={isPaid ? 'receipt' : 'invoice'} />
     </div>
   );
 }

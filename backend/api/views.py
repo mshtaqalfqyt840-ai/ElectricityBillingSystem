@@ -15,6 +15,13 @@ from .exceptions import OverdueInvoiceError, NotFoundError, ValidationError, Met
 from .services   import MeterCommandService
 
 
+class PingView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request):
+        return Response({"status": "ok", "message": "Server is awake"})
+
+
 class BuildingViewSet(viewsets.ModelViewSet):
     queryset = Building.objects.all()
     serializer_class = BuildingSerializer
@@ -28,7 +35,7 @@ class BuildingViewSet(viewsets.ModelViewSet):
 
 
 class RoomViewSet(viewsets.ModelViewSet):
-    queryset = Room.objects.all()
+    queryset = Room.objects.select_related('building').all()
     serializer_class = RoomSerializer
 
     def get_permissions(self):
@@ -47,7 +54,7 @@ class RoomViewSet(viewsets.ModelViewSet):
 
 
 class StudentViewSet(viewsets.ModelViewSet):
-    queryset = Student.objects.all()
+    queryset = Student.objects.select_related('room').all()
     serializer_class = StudentSerializer
 
     def get_permissions(self):
@@ -79,7 +86,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
 
 class ComplaintViewSet(viewsets.ModelViewSet):
-    queryset = Complaint.objects.all().order_by('-created_at')
+    queryset = Complaint.objects.select_related('student', 'student__room').all().order_by('-created_at')
     serializer_class = ComplaintSerializer
 
     def get_permissions(self):
@@ -126,7 +133,7 @@ class PublicRoomInvoiceView(APIView):
 
 
 class InvoiceViewSet(viewsets.ModelViewSet):
-    queryset = Invoice.objects.all()
+    queryset = Invoice.objects.select_related('room', 'created_by', 'approved_by').all()
     serializer_class = InvoiceSerializer
 
     def get_permissions(self):

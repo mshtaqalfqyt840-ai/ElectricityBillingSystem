@@ -65,11 +65,14 @@ class InvoiceSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['created_at', 'is_overdue', 'overdue_fine', 'payment_deadline']
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        from .models import SystemSettings
+        self._settings_obj = SystemSettings.get_settings()
+
     def get_payment_deadline(self, obj):
         from datetime import timedelta
-        from .models import SystemSettings
-        settings_obj = SystemSettings.get_settings()
-        deadline = obj.created_at + timedelta(hours=settings_obj.payment_deadline_hours)
+        deadline = obj.created_at + timedelta(hours=self._settings_obj.payment_deadline_hours)
         return deadline.isoformat()
 
     def validate(self, data):

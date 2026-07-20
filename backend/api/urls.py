@@ -5,7 +5,7 @@ from .views import (
     BuildingViewSet, RoomViewSet, StudentViewSet,
     UserViewSet, InvoiceViewSet, SystemSettingsView, SettlePaymentView,
     VerifyTransactionView, ComplaintViewSet, PublicRoomInvoiceView,
-    CreateInstallmentPlanView, ManualMeterActionView, AuditLogListView
+    CreateInstallmentPlanView, ManualMeterActionView, AuditLogListView, PingView
 )
 from .views_auth import LoginView
 from .views_reports import FinancialReportView
@@ -20,6 +20,7 @@ router.register(r'complaints', ComplaintViewSet, basename='complaint')
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('ping/', PingView.as_view(), name='ping'),
     path('login/', LoginView.as_view(), name='login'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('settings/', SystemSettingsView.as_view(), name='system-settings'),
