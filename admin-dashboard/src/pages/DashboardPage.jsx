@@ -12,6 +12,7 @@ export default function DashboardPage() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [currentTab, setCurrentTab] = useState('overview'); // overview, buildings, rooms, students, invoices, users
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Sidebar toggle state
   
   // البيانات الأساسية
   const [buildings, setBuildings] = useState([]);
@@ -313,9 +314,13 @@ export default function DashboardPage() {
 
   return (
     <div className="dashboard-container">
+      {/* ── Overlay للموبايل ── */}
+      {isSidebarOpen && <div className="sidebar-overlay" onClick={() => setIsSidebarOpen(false)}></div>}
+
       {/* ── الشريط الجانبي (Sidebar) ── */}
-      <aside className="sidebar">
+      <aside className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
         <div className="sidebar-logo">
+          <button className="close-sidebar-btn" onClick={() => setIsSidebarOpen(false)}>✕</button>
           <div className="logo-icon">⚡</div>
           <h2>نظام الفواتير</h2>
           <span>الكهربائية للمباني</span>
@@ -324,42 +329,42 @@ export default function DashboardPage() {
         <nav className="sidebar-nav">
           <button 
             className={`nav-item ${currentTab === 'overview' ? 'active' : ''}`}
-            onClick={() => setCurrentTab('overview')}
+            onClick={() => { setCurrentTab('overview'); setIsSidebarOpen(false); }}
           >
             📊 لوحة التحكم
           </button>
           
           <button 
             className={`nav-item ${currentTab === 'buildings' ? 'active' : ''}`}
-            onClick={() => setCurrentTab('buildings')}
+            onClick={() => { setCurrentTab('buildings'); setIsSidebarOpen(false); }}
           >
             🏢 إدارة المباني
           </button>
 
           <button 
             className={`nav-item ${currentTab === 'rooms' ? 'active' : ''}`}
-            onClick={() => setCurrentTab('rooms')}
+            onClick={() => { setCurrentTab('rooms'); setIsSidebarOpen(false); }}
           >
             🔑 إدارة الغرف
           </button>
 
           <button 
             className={`nav-item ${currentTab === 'students' ? 'active' : ''}`}
-            onClick={() => setCurrentTab('students')}
+            onClick={() => { setCurrentTab('students'); setIsSidebarOpen(false); }}
           >
             👥 إدارة الطلاب
           </button>
 
           <button 
             className={`nav-item ${currentTab === 'invoices' ? 'active' : ''}`}
-            onClick={() => setCurrentTab('invoices')}
+            onClick={() => { setCurrentTab('invoices'); setIsSidebarOpen(false); }}
           >
             📄 فواتير الاستهلاك
           </button>
 
           <button 
             className={`nav-item ${currentTab === 'complaints' ? 'active' : ''}`}
-            onClick={() => setCurrentTab('complaints')}
+            onClick={() => { setCurrentTab('complaints'); setIsSidebarOpen(false); }}
           >
             📩 الشكاوى والملاحظات
           </button>
@@ -367,7 +372,7 @@ export default function DashboardPage() {
           {user?.role === 'admin' && (
             <button 
               className={`nav-item ${currentTab === 'users' ? 'active' : ''}`}
-              onClick={() => setCurrentTab('users')}
+              onClick={() => { setCurrentTab('users'); setIsSidebarOpen(false); }}
             >
               ⚙️ إدارة المستخدمين
             </button>
@@ -391,9 +396,14 @@ export default function DashboardPage() {
       {/* ── القسم الرئيسي (Main Content) ── */}
       <main className="main-content">
         <header className="content-header">
-          <div className="welcome-text">
-            <h1>لوحة التحكم الرقمية</h1>
-            <p>مرحباً بك مجدداً، تدير هذا النظام بصفتك {getRoleLabel(user?.role)}</p>
+          <div className="header-left-side">
+            <button className="menu-toggle" onClick={() => setIsSidebarOpen(true)}>
+              ☰
+            </button>
+            <div className="welcome-text">
+              <h1>لوحة التحكم الرقمية</h1>
+              <p>مرحباً بك مجدداً، تدير هذا النظام بصفتك {getRoleLabel(user?.role)}</p>
+            </div>
           </div>
 
           <div className="quick-actions">
