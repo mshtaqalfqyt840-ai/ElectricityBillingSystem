@@ -8,7 +8,7 @@ import PricingTransparencyPanel from '../components/PricingTransparencyPanel';
 import QRCode from 'react-qr-code';
 import Confetti from 'react-confetti';
 import { useWindowSize } from 'react-use';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
 import * as XLSX from 'xlsx';
 import './DashboardPage.css';
 
@@ -526,22 +526,55 @@ export default function DashboardPage() {
                   </div>
                 </div>
 
-                <div className="dashboard-charts-grid" style={{ marginBottom: '40px' }}>
-                  <div className="panel" style={{ padding: '24px' }}>
-                    <div className="panel-header">
-                      <h3>معدل الاستهلاك المالي (لآخر الفواتير)</h3>
+                <div className="dashboard-charts-grid" style={{ marginBottom: '40px', display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
+                  {/* الدائرة البيانية لحالة الفواتير */}
+                  <div className="panel" style={{ flex: '1', minWidth: '280px', padding: '24px' }}>
+                    <div className="panel-header" style={{ marginBottom: '16px' }}>
+                      <h3 style={{ fontSize: '16px' }}>حالة تحصيل الفواتير</h3>
                     </div>
-                    <div style={{ height: '300px', width: '100%' }}>
+                    <div style={{ height: '220px', width: '100%' }}>
                       <ResponsiveContainer width="100%" height="100%">
-                        <BarChart data={invoices.slice(0, 7)}>
-                          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-                          <XAxis dataKey="room_qr" stroke="var(--text-secondary)" />
-                          <YAxis stroke="var(--text-secondary)" />
+                        <PieChart>
+                          <Pie 
+                            data={statusData} 
+                            innerRadius={60} 
+                            outerRadius={80} 
+                            paddingAngle={5} 
+                            dataKey="value"
+                            stroke="none"
+                          >
+                            {statusData.map((entry, index) => (
+                              <Cell key={`cell-${index}`} fill={entry.color} />
+                            ))}
+                          </Pie>
                           <Tooltip 
-                            contentStyle={{ backgroundColor: 'var(--sidebar-bg)', borderColor: 'var(--border-color)', color: 'var(--text-primary)' }}
-                            itemStyle={{ color: 'var(--primary)' }}
+                            contentStyle={{ backgroundColor: 'var(--sidebar-bg)', borderColor: 'var(--border-color)', borderRadius: '12px', color: 'var(--text-primary)' }}
+                            itemStyle={{ color: 'var(--text-primary)' }}
+                            formatter={(value, name) => [value + ' فاتورة', name]}
                           />
-                          <Bar dataKey="final_amount" fill="var(--primary)" radius={[4, 4, 0, 0]} />
+                          <Legend verticalAlign="bottom" height={36} iconType="circle" />
+                        </PieChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </div>
+
+                  {/* الرسم الشريطي لأعلى استهلاك */}
+                  <div className="panel" style={{ flex: '2', minWidth: '320px', padding: '24px' }}>
+                    <div className="panel-header" style={{ marginBottom: '16px' }}>
+                      <h3 style={{ fontSize: '16px' }}>أعلى 5 غرف استهلاكاً للكهرباء (كيلوواط)</h3>
+                    </div>
+                    <div style={{ height: '220px', width: '100%' }}>
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={topConsumers} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
+                          <XAxis dataKey="room" stroke="var(--text-secondary)" tick={{fontSize: 12}} tickMargin={10} axisLine={false} tickLine={false} />
+                          <YAxis stroke="var(--text-secondary)" tick={{fontSize: 12}} axisLine={false} tickLine={false} />
+                          <Tooltip 
+                            contentStyle={{ backgroundColor: 'var(--sidebar-bg)', borderColor: 'var(--border-color)', borderRadius: '12px', color: 'var(--text-primary)' }}
+                            itemStyle={{ color: 'var(--accent)' }}
+                            formatter={(value, name) => [value + ' KWh', 'الاستهلاك']}
+                          />
+                          <Bar dataKey="consumption" fill="var(--accent)" radius={[6, 6, 0, 0]} barSize={40} />
                         </BarChart>
                       </ResponsiveContainer>
                     </div>
