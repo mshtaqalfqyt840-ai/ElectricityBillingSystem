@@ -549,28 +549,32 @@ export default function DashboardPage() {
                       <h3 style={{ fontSize: '16px' }}>حالة تحصيل الفواتير</h3>
                     </div>
                     <div style={{ height: '220px', width: '100%' }}>
-                      <ResponsiveContainer width="100%" height="100%">
-                        <PieChart>
-                          <Pie 
-                            data={statusData} 
-                            innerRadius={60} 
-                            outerRadius={80} 
-                            paddingAngle={5} 
-                            dataKey="value"
-                            stroke="none"
-                          >
-                            {statusData.map((entry, index) => (
-                              <Cell key={`cell-${index}`} fill={entry.color} />
-                            ))}
-                          </Pie>
-                          <Tooltip 
-                            contentStyle={{ backgroundColor: 'var(--sidebar-bg)', borderColor: 'var(--border-color)', borderRadius: '12px', color: 'var(--text-primary)' }}
-                            itemStyle={{ color: 'var(--text-primary)' }}
-                            formatter={(value, name) => [value + ' فاتورة', name]}
-                          />
-                          <Legend verticalAlign="bottom" height={36} iconType="circle" />
-                        </PieChart>
-                      </ResponsiveContainer>
+                      {statusData.length > 0 ? (
+                        <ResponsiveContainer width="100%" height="100%">
+                          <PieChart>
+                            <Pie 
+                              data={statusData} 
+                              innerRadius={60} 
+                              outerRadius={80} 
+                              paddingAngle={5} 
+                              dataKey="value"
+                              stroke="none"
+                            >
+                              {statusData.map((entry, index) => (
+                                <Cell key={`cell-${index}`} fill={entry.color} />
+                              ))}
+                            </Pie>
+                            <Tooltip 
+                              contentStyle={{ backgroundColor: 'var(--sidebar-bg)', borderColor: 'var(--border-color)', borderRadius: '12px', color: 'var(--text-primary)' }}
+                              itemStyle={{ color: 'var(--text-primary)' }}
+                              formatter={(value, name) => [value + ' فاتورة', name]}
+                            />
+                            <Legend verticalAlign="bottom" height={36} iconType="circle" />
+                          </PieChart>
+                        </ResponsiveContainer>
+                      ) : (
+                        <div style={{ display: 'flex', height: '100%', justifyContent: 'center', alignItems: 'center', color: 'var(--text-muted)' }}>لا توجد بيانات فواتير</div>
+                      )}
                     </div>
                   </div>
 
@@ -580,19 +584,23 @@ export default function DashboardPage() {
                       <h3 style={{ fontSize: '16px' }}>أعلى 5 غرف استهلاكاً للكهرباء (كيلوواط)</h3>
                     </div>
                     <div style={{ height: '220px', width: '100%' }}>
-                      <ResponsiveContainer width="100%" height="100%">
-                        <BarChart data={topConsumers} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
-                          <XAxis dataKey="room" stroke="var(--text-secondary)" tick={{fontSize: 12}} tickMargin={10} axisLine={false} tickLine={false} />
-                          <YAxis stroke="var(--text-secondary)" tick={{fontSize: 12}} axisLine={false} tickLine={false} />
-                          <Tooltip 
-                            contentStyle={{ backgroundColor: 'var(--sidebar-bg)', borderColor: 'var(--border-color)', borderRadius: '12px', color: 'var(--text-primary)' }}
-                            itemStyle={{ color: 'var(--accent)' }}
-                            formatter={(value, name) => [value + ' KWh', 'الاستهلاك']}
-                          />
-                          <Bar dataKey="consumption" fill="var(--accent)" radius={[6, 6, 0, 0]} barSize={40} />
-                        </BarChart>
-                      </ResponsiveContainer>
+                      {topConsumers.length > 0 ? (
+                        <ResponsiveContainer width="100%" height="100%">
+                          <BarChart data={topConsumers} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
+                            <XAxis dataKey="room" stroke="var(--text-secondary)" tick={{fontSize: 12}} tickMargin={10} axisLine={false} tickLine={false} />
+                            <YAxis stroke="var(--text-secondary)" tick={{fontSize: 12}} axisLine={false} tickLine={false} />
+                            <Tooltip 
+                              contentStyle={{ backgroundColor: 'var(--sidebar-bg)', borderColor: 'var(--border-color)', borderRadius: '12px', color: 'var(--text-primary)' }}
+                              itemStyle={{ color: 'var(--accent)' }}
+                              formatter={(value, name) => [value + ' KWh', 'الاستهلاك']}
+                            />
+                            <Bar dataKey="consumption" fill="var(--accent)" radius={[6, 6, 0, 0]} barSize={40} />
+                          </BarChart>
+                        </ResponsiveContainer>
+                      ) : (
+                        <div style={{ display: 'flex', height: '100%', justifyContent: 'center', alignItems: 'center', color: 'var(--text-muted)' }}>لا توجد استهلاكات مسجلة</div>
+                      )}
                     </div>
                   </div>
                 </div>
