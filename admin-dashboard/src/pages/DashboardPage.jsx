@@ -6,6 +6,10 @@ import PaymentCountdown from '../components/PaymentCountdown';
 import ElectronicPaymentForm from '../components/ElectronicPaymentForm';
 import PricingTransparencyPanel from '../components/PricingTransparencyPanel';
 import QRCode from 'react-qr-code';
+import Confetti from 'react-confetti';
+import { useWindowSize } from 'react-use';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import * as XLSX from 'xlsx';
 import './DashboardPage.css';
 
 export default function DashboardPage() {
@@ -26,6 +30,18 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+
+  // الميزات السحرية (Magical Features States)
+  const [showConfetti, setShowConfetti] = useState(false);
+  const { width, height } = useWindowSize();
+  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark');
+
+  // تطبيق السمة (Theme)
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+
 
   // حالات النوافذ المنبثقة (Modals)
   const [showModal, setShowModal] = useState(null); // 'building', 'room', 'student', 'invoice', 'user', 'qr', 'image'
@@ -240,6 +256,8 @@ export default function DashboardPage() {
     try {
       await axiosClient.post(`/invoices/${id}/approve/`);
       showNotification('تم اعتماد الفاتورة بنجاح!');
+      setShowConfetti(true);
+      setTimeout(() => setShowConfetti(false), 5000); // إخفاء بعد 5 ثوانٍ
       fetchData();
     } catch (err) {
       showNotification('فشل اعتماد الفاتورة.', false);
@@ -250,6 +268,8 @@ export default function DashboardPage() {
     try {
       await axiosClient.post(`/invoices/${id}/mark_paid/`);
       showNotification('تم تسجيل دفع الفاتورة بنجاح!');
+      setShowConfetti(true);
+      setTimeout(() => setShowConfetti(false), 5000); // إخفاء بعد 5 ثوانٍ
       fetchData();
     } catch (err) {
       showNotification('فشل تسجيل دفع الفاتورة.', false);
@@ -296,6 +316,37 @@ export default function DashboardPage() {
     return badges[status] || status;
   };
 
+  // ── تصدير إلى إكسل ──
+  const handleExportInvoices = () => {
+    const dataToExport = filteredInvoices.map(inv => ({
+      'رقم الغرفة': inv.room_qr,
+      'القراءة القديمة': inv.reading_old,
+      'القراءة الجديدة': inv.reading_new,
+      'الاستهلاك': inv.consumption,
+      'السعر الإجمالي (ريال)': inv.final_amount,
+      'حالة الفاتورة': inv.status === 'paid' ? 'مدفوعة' : inv.status === 'approved' ? 'معتمدة' : 'قيد المراجعة',
+      'تاريخ الإنشاء': new Date(inv.created_at).toLocaleDateString('ar-SA')
+    }));
+    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "الفواتير");
+    XLSX.writeFile(workbook, "تقرير_الفواتير.xlsx");
+  };
+
+  const handleExportStudents = () => {
+    const dataToExport = filteredStudents.map(s => ({
+      'اسم الطالب': s.name,
+      'رقم الهاتف': s.phone,
+      'الغرفة': s.room_qr,
+      'الحالة': s.status === 'active' ? 'نشط' : 'مغادر',
+      'تاريخ التسجيل': new Date(s.created_at).toLocaleDateString('ar-SA')
+    }));
+    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "الطلاب");
+    XLSX.writeFile(workbook, "تقرير_الطلاب.xlsx");
+  };
+
   // تصفية وتصفح الفواتير والغرف والطلاب
   const filteredRooms = rooms.filter(r => {
     return (!buildingFilter || r.building === parseInt(buildingFilter)) &&
@@ -314,6 +365,9 @@ export default function DashboardPage() {
 
   return (
     <div className="dashboard-container">
+      {/* ── الاحتفال (Confetti) ── */}
+      {showConfetti && <Confetti width={width} height={height} numberOfPieces={300} />}
+
       {/* ── Overlay للموبايل ── */}
       {isSidebarOpen && <div className="sidebar-overlay" onClick={() => setIsSidebarOpen(false)}></div>}
 
@@ -407,6 +461,14 @@ export default function DashboardPage() {
           </div>
 
           <div className="quick-actions">
+            {/* زر تبديل الثيم */}
+            <button 
+              className="btn btn-secondary" 
+              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              style={{ borderRadius: '50%', width: '45px', height: '45px', padding: 0 }}
+            >
+              {theme === 'dark' ? '☀️' : '🌙'}
+            </button>
             {user?.role === 'admin' && (
               <>
                 <button className="btn btn-primary" onClick={() => setShowModal('building')}>➕ مبنى جديد</button>
@@ -455,6 +517,28 @@ export default function DashboardPage() {
                     <h3>الفواتير المعلقة</h3>
                     <p className="value">{invoices.filter(i => i.status === 'pending').length}</p>
                     <span className="desc">بانتظار الاعتماد المالي</span>
+                  </div>
+                </div>
+
+                <div className="dashboard-charts-grid" style={{ marginBottom: '40px' }}>
+                  <div className="panel" style={{ padding: '24px' }}>
+                    <div className="panel-header">
+                      <h3>معدل الاستهلاك المالي (لآخر الفواتير)</h3>
+                    </div>
+                    <div style={{ height: '300px', width: '100%' }}>
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={invoices.slice(0, 7)}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                          <XAxis dataKey="room_qr" stroke="var(--text-secondary)" />
+                          <YAxis stroke="var(--text-secondary)" />
+                          <Tooltip 
+                            contentStyle={{ backgroundColor: 'var(--sidebar-bg)', borderColor: 'var(--border-color)', color: 'var(--text-primary)' }}
+                            itemStyle={{ color: 'var(--primary)' }}
+                          />
+                          <Bar dataKey="final_amount" fill="var(--primary)" radius={[4, 4, 0, 0]} />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
                   </div>
                 </div>
 
@@ -604,6 +688,9 @@ export default function DashboardPage() {
                 <div className="panel-header">
                   <h3>إدارة الطلاب وتسكين السكن</h3>
                   <div className="filters">
+                    <button className="btn btn-success" onClick={handleExportStudents} style={{ marginLeft: '12px' }}>
+                      📥 تصدير إلى Excel
+                    </button>
                     <input 
                       type="text" 
                       placeholder="ابحث برمز الغرفة..." 
@@ -666,6 +753,9 @@ export default function DashboardPage() {
                   <div className="panel-header">
                   <h3>إدارة الفواتير والتحقق من القراءات</h3>
                   <div className="filters">
+                    <button className="btn btn-success" onClick={handleExportInvoices} style={{ marginLeft: '12px' }}>
+                      📥 تصدير إلى Excel
+                    </button>
                     <select 
                       value={statusFilter} 
                       onChange={(e) => setStatusFilter(e.target.value)}
