@@ -1,0 +1,123 @@
+/*
+ * PaymentCountdown.css
+ * يستخدم نفس CSS Variables المعرّفة في DashboardPage.css
+ * لضمان التوافق الكامل مع نظام الألوان والتصميم.
+ */
+
+/* ── الحاوية الأساسية ── */
+.countdown-badge {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-family: 'Tajawal', sans-serif;
+  font-size: 13px;
+  min-width: 120px;
+  transition: all 0.3s ease;
+}
+
+/* ── الحالة الطبيعية: أزرق-بنفسجي هادئ ── */
+.countdown-badge.normal {
+  background: rgba(99, 102, 241, 0.08);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  color: #a5b4fc;
+}
+
+/* ── حالة التحذير: أقل من 5 ساعات (أحمر + نبضة) ── */
+.countdown-badge.urgent {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  color: #fca5a5;
+  animation: pulse-red 1.6s ease-in-out infinite;
+}
+
+/* ── حالة الانتهاء: منتهية المهلة ── */
+.countdown-badge.overdue {
+  background: rgba(239, 68, 68, 0.06);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  color: #f87171;
+}
+
+/* ── نص تحذير "اقتربت المهلة" ── */
+.countdown-warning {
+  font-size: 11px;
+  font-weight: 700;
+  color: #fca5a5;
+  letter-spacing: 0.3px;
+  text-align: center;
+  line-height: 1;
+}
+
+/* ── عرض الأرقام (ساعة:دقيقة:ثانية) ── */
+.countdown-display {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  direction: ltr; /* الأرقام دائماً من اليسار لليمين */
+}
+
+.countdown-unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 28px;
+}
+
+.countdown-value {
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1;
+  font-variant-numeric: tabular-nums; /* أرقام بعرض ثابت تمنع الاهتزاز */
+  letter-spacing: 0.5px;
+}
+
+.countdown-unit-label {
+  font-size: 9px;
+  font-weight: 500;
+  opacity: 0.7;
+  margin-top: 2px;
+}
+
+.countdown-sep {
+  font-size: 16px;
+  font-weight: 700;
+  opacity: 0.5;
+  align-self: flex-start;
+  padding-top: 1px;
+  margin: 0 1px;
+}
+
+/* ── أيقونة الانتهاء ── */
+.countdown-icon {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.countdown-label-overdue {
+  font-size: 12px;
+  font-weight: 700;
+  color: #f87171;
+  text-align: center;
+}
+
+.countdown-fine {
+  font-size: 11px;
+  color: #fca5a5;
+  opacity: 0.85;
+  text-align: center;
+  margin-top: 2px;
+}
+
+/* ── Animation: نبضة حمراء للحالة العاجلة ── */
+@keyframes pulse-red {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+    border-color: rgba(239, 68, 68, 0.35);
+  }
+  50% {
+    box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.12);
+    border-color: rgba(239, 68, 68, 0.65);
+  }
+}

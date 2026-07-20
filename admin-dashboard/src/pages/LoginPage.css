@@ -1,0 +1,284 @@
+/* ── خلفية صفحة تسجيل الدخول ── */
+.login-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #0f0c29 0%, #1a1a40 50%, #24243e 100%);
+  position: relative;
+  overflow: hidden;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  direction: rtl;
+}
+
+/* ── أشكال الخلفية المتحركة ── */
+.login-bg-shapes {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.shape {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.4;
+  animation: float 8s ease-in-out infinite;
+}
+
+.shape-1 {
+  width: 400px;
+  height: 400px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  top: -100px;
+  right: -100px;
+  animation-delay: 0s;
+}
+
+.shape-2 {
+  width: 300px;
+  height: 300px;
+  background: linear-gradient(135deg, #f093fb, #f5576c);
+  bottom: -80px;
+  left: -80px;
+  animation-delay: 2s;
+}
+
+.shape-3 {
+  width: 200px;
+  height: 200px;
+  background: linear-gradient(135deg, #4facfe, #00f2fe);
+  top: 50%;
+  left: 50%;
+  animation-delay: 4s;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-30px) scale(1.05); }
+}
+
+/* ── البطاقة الرئيسية ── */
+.login-card {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 420px;
+  padding: 40px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
+  animation: slideUp 0.6s ease-out;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── رأس البطاقة ── */
+.login-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.login-icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border-radius: 16px;
+  color: #fff;
+  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+}
+
+.login-header h1 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 6px;
+}
+
+.login-header p {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 0;
+}
+
+/* ── النموذج ── */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ── رسالة الخطأ ── */
+.login-error {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 12px;
+  color: #fca5a5;
+  font-size: 14px;
+  animation: shake 0.4s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-8px); }
+  75% { transform: translateX(8px); }
+}
+
+/* ── مجموعة الإدخال ── */
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.input-group label {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 0 14px;
+  transition: all 0.3s ease;
+}
+
+.input-wrapper:focus-within {
+  border-color: #667eea;
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+}
+
+.input-wrapper svg {
+  color: rgba(255, 255, 255, 0.35);
+  flex-shrink: 0;
+}
+
+.input-wrapper input {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  padding: 14px 12px;
+  color: #fff;
+  font-size: 15px;
+  font-family: inherit;
+  direction: rtl;
+}
+
+.input-wrapper input::placeholder {
+  color: rgba(255, 255, 255, 0.25);
+}
+
+.input-wrapper input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 1000px rgba(15, 12, 41, 1) inset !important;
+  -webkit-text-fill-color: #fff !important;
+}
+
+/* ── زر إظهار/إخفاء كلمة المرور ── */
+.toggle-password {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  color: rgba(255, 255, 255, 0.35);
+  transition: color 0.2s;
+  display: flex;
+}
+
+.toggle-password:hover {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* ── زر تسجيل الدخول ── */
+.login-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px;
+  margin-top: 4px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+}
+
+.login-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+}
+
+.login-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.login-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* ── مؤشر التحميل ── */
+.spinner {
+  width: 22px;
+  height: 22px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── ذيل البطاقة ── */
+.login-footer {
+  text-align: center;
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.login-footer p {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.25);
+  margin: 0;
+}
+
+/* ── تجاوب مع الشاشات الصغيرة ── */
+@media (max-width: 480px) {
+  .login-card {
+    margin: 16px;
+    padding: 28px;
+  }
+
+  .login-header h1 {
+    font-size: 18px;
+  }
+}

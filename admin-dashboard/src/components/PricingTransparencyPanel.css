@@ -1,0 +1,88 @@
+/* PricingTransparencyPanel.css */
+.transparency-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  font-family: 'Tajawal', sans-serif;
+  color: var(--text);
+  transition: all 0.3s ease;
+}
+
+.transparency-panel:hover {
+  border-color: var(--primary);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.08);
+}
+
+.transparency-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 8px;
+}
+
+.transparency-icon {
+  font-size: 20px;
+}
+
+.transparency-header h4 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.transparency-content {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  margin-bottom: 12px;
+}
+
+.transparency-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.item-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.item-value {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.item-value.text-warning {
+  color: var(--warning);
+}
+
+.transparency-footer {
+  background: rgba(99, 102, 241, 0.05);
+  padding: 10px 12px;
+  border-radius: 6px;
+  border-right: 3px solid var(--primary);
+}
+
+.transparency-footer small {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.transparency-panel.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100px;
+  color: var(--text-muted);
+  font-size: 14px;
+}

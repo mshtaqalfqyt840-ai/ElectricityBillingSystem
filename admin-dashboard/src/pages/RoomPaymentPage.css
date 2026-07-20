@@ -1,0 +1,156 @@
+/* RoomPaymentPage.css */
+.payment-page-container {
+  min-height: 100vh;
+  background-color: var(--background);
+  color: var(--text);
+  font-family: 'Tajawal', sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+.payment-page-container.loading,
+.payment-page-container.error {
+  justify-content: center;
+}
+
+.payment-header {
+  text-align: center;
+  margin-bottom: 30px;
+  margin-top: 20px;
+}
+
+.payment-header .logo-icon {
+  font-size: 48px;
+  margin-bottom: 10px;
+}
+
+.payment-header h1 {
+  color: var(--primary);
+  margin: 0;
+  font-size: 24px;
+}
+
+.payment-header p {
+  color: var(--text-muted);
+  margin: 5px 0 0;
+}
+
+.payment-main {
+  width: 100%;
+  max-width: 600px;
+}
+
+.invoice-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.invoice-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 16px;
+}
+
+.invoice-header h2 {
+  margin: 0 0 8px 0;
+  color: var(--text);
+}
+
+.room-info {
+  margin: 0;
+  font-weight: 600;
+  color: var(--primary);
+  background: rgba(99, 102, 241, 0.1);
+  padding: 4px 12px;
+  border-radius: 20px;
+  display: inline-block;
+}
+
+.invoice-details {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px dashed var(--border);
+}
+
+.detail-item:last-child {
+  border-bottom: none;
+}
+
+.detail-item .label {
+  color: var(--text-muted);
+}
+
+.detail-item .value {
+  font-weight: 700;
+}
+
+.detail-item.highlight {
+  background: rgba(99, 102, 241, 0.05);
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+}
+
+.detail-item.highlight .value {
+  color: var(--primary);
+  font-size: 18px;
+}
+
+.invoice-total {
+  background: var(--surface);
+  border: 2px solid var(--primary);
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.invoice-total h3 {
+  margin: 0 0 10px 0;
+  color: var(--text-muted);
+}
+
+.total-amount {
+  font-size: 36px;
+  font-weight: 900;
+  color: var(--primary);
+}
+
+.total-amount small {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.payment-actions {
+  background: rgba(99, 102, 241, 0.05);
+  padding: 20px;
+  border-radius: 12px;
+}
+
+.payment-footer {
+  margin-top: auto;
+  padding: 30px 0;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.error-icon {
+  font-size: 64px;
+  margin-bottom: 20px;
+}

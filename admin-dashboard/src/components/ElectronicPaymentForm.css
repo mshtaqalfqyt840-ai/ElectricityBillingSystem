@@ -1,0 +1,77 @@
+/* ElectronicPaymentForm.css */
+
+.electronic-payment-form {
+  background: rgba(99, 102, 241, 0.05);
+  border: 1px solid rgba(99, 102, 241, 0.15);
+  border-radius: 8px;
+  padding: 8px;
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 220px;
+}
+
+.epf-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--primary);
+  margin: 0;
+  text-align: center;
+}
+
+.epf-container {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.epf-select,
+.epf-input {
+  width: 100%;
+  padding: 4px 6px;
+  font-size: 11px;
+  font-family: inherit;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background-color: var(--surface);
+  color: var(--text);
+  transition: border-color 0.2s;
+}
+
+.epf-select:focus,
+.epf-input:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.epf-select:disabled,
+.epf-input:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.epf-submit {
+  width: 100%;
+  padding: 4px 0;
+  font-size: 11px;
+  margin-top: 2px;
+}
+
+.epf-message {
+  font-size: 10px;
+  font-weight: 600;
+  text-align: center;
+  padding: 4px;
+  border-radius: 4px;
+}
+
+.epf-message.success {
+  background: rgba(34, 197, 94, 0.1);
+  color: var(--success);
+}
+
+.epf-message.error {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--danger);
+}
