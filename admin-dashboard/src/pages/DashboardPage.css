@@ -21,10 +21,20 @@
 .dashboard-container {
   display: flex;
   min-height: 100vh;
-  background: var(--bg-gradient);
+  background: linear-gradient(-45deg, #090816, #0d0c24, #1a1638, #0b1a2e);
+  background-size: 400% 400%;
+  animation: gradientBG 15s ease infinite;
   color: var(--text-primary);
   font-family: 'Tajawal', sans-serif;
   direction: rtl;
+  position: relative;
+  overflow: hidden;
+}
+
+@keyframes gradientBG {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 /* ── Sidebar Styling ── */
@@ -50,11 +60,17 @@
 
 .logo-icon {
   font-size: 36px;
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  background: linear-gradient(135deg, var(--primary), var(--accent));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 0 10px rgba(99, 102, 241, 0.4));
+  filter: drop-shadow(0 0 15px rgba(99, 102, 241, 0.6));
   margin-bottom: 8px;
+  animation: pulseLogo 3s infinite alternate;
+}
+
+@keyframes pulseLogo {
+  0% { filter: drop-shadow(0 0 10px rgba(99, 102, 241, 0.4)); transform: scale(1); }
+  100% { filter: drop-shadow(0 0 25px rgba(6, 182, 212, 0.8)); transform: scale(1.1); }
 }
 
 .sidebar-logo h2 {
@@ -348,10 +364,10 @@
   border-color: rgba(255, 255, 255, 0.15);
 }
 
-.stat-card.blue:hover { box-shadow: 0 15px 30px rgba(99, 102, 241, 0.2); }
-.stat-card.purple:hover { box-shadow: 0 15px 30px rgba(236, 72, 153, 0.2); }
-.stat-card.green:hover { box-shadow: 0 15px 30px rgba(16, 185, 129, 0.2); }
-.stat-card.gold:hover { box-shadow: 0 15px 30px rgba(245, 158, 11, 0.2); }
+.stat-card.blue:hover { box-shadow: 0 15px 35px rgba(99, 102, 241, 0.4), inset 0 0 20px rgba(99, 102, 241, 0.1); }
+.stat-card.purple:hover { box-shadow: 0 15px 35px rgba(236, 72, 153, 0.4), inset 0 0 20px rgba(236, 72, 153, 0.1); }
+.stat-card.green:hover { box-shadow: 0 15px 35px rgba(16, 185, 129, 0.4), inset 0 0 20px rgba(16, 185, 129, 0.1); }
+.stat-card.gold:hover { box-shadow: 0 15px 35px rgba(245, 158, 11, 0.4), inset 0 0 20px rgba(245, 158, 11, 0.1); }
 
 .stat-card::before {
   content: '';
@@ -362,10 +378,10 @@
   height: 100%;
 }
 
-.stat-card.blue::before { background: var(--primary); }
-.stat-card.purple::before { background: var(--secondary); }
-.stat-card.green::before { background: var(--success); }
-.stat-card.gold::before { background: var(--warning); }
+.stat-card.blue::before { background: var(--primary); box-shadow: 0 0 15px var(--primary); }
+.stat-card.purple::before { background: var(--secondary); box-shadow: 0 0 15px var(--secondary); }
+.stat-card.green::before { background: var(--success); box-shadow: 0 0 15px var(--success); }
+.stat-card.gold::before { background: var(--warning); box-shadow: 0 0 15px var(--warning); }
 
 .stat-card h3 {
   font-size: 15px;
