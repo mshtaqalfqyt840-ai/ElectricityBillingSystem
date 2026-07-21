@@ -3,8 +3,12 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.utils import timezone
+from django.db.models import Q
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 from datetime import timedelta
 from .models import Building, Room, Student, User, Invoice, SystemSettings, Complaint
+from .pagination import StandardResultsSetPagination
 from .serializers import (
     BuildingSerializer, RoomSerializer, StudentSerializer,
     UserSerializer, InvoiceSerializer, SystemSettingsSerializer,
@@ -23,6 +27,7 @@ class PingView(APIView):
 
 
 class BuildingViewSet(viewsets.ModelViewSet):
+    pagination_class = None
     queryset = Building.objects.all()
     serializer_class = BuildingSerializer
 
@@ -74,6 +79,7 @@ class BuildingViewSet(viewsets.ModelViewSet):
 
 
 class RoomViewSet(viewsets.ModelViewSet):
+    pagination_class = StandardResultsSetPagination
     queryset = Room.objects.select_related('building').all()
     serializer_class = RoomSerializer
 
@@ -87,12 +93,19 @@ class RoomViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = super().get_queryset()
         building_id = self.request.query_params.get('building')
+        search_param = self.request.query_params.get('search')
         if building_id:
             queryset = queryset.filter(building_id=building_id)
+        if search_param:
+            queryset = queryset.filter(
+                Q(room_number__icontains=search_param) |
+                Q(qr_code__icontains=search_param)
+            )
         return queryset
 
 
 class StudentViewSet(viewsets.ModelViewSet):
+    pagination_class = StandardResultsSetPagination
     queryset = Student.objects.select_related('room').all()
     serializer_class = StudentSerializer
 
@@ -172,6 +185,7 @@ class PublicRoomInvoiceView(APIView):
 
 
 class InvoiceViewSet(viewsets.ModelViewSet):
+    pagination_class = StandardResultsSetPagination
     queryset = Invoice.objects.select_related('room', 'created_by', 'approved_by').all()
     serializer_class = InvoiceSerializer
 
@@ -190,10 +204,19 @@ class InvoiceViewSet(viewsets.ModelViewSet):
         queryset = super().get_queryset()
         status_param = self.request.query_params.get('status')
         room_id = self.request.query_params.get('room')
+        search_param = self.request.query_params.get('search')
         if status_param:
-            queryset = queryset.filter(status=status_param)
+            if status_param == 'overdue':
+                queryset = queryset.filter(is_overdue=True)
+            else:
+                queryset = queryset.filter(status=status_param)
         if room_id:
             queryset = queryset.filter(room_id=room_id)
+        if search_param:
+            queryset = queryset.filter(
+                Q(room__room_number__icontains=search_param) |
+                Q(room__qr_code__icontains=search_param)
+            )
         return queryset
 
     def create(self, request, *args, **kwargs):
@@ -358,7 +381,6 @@ class InvoiceViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
-class SystemSettingsView(APIView):
     """
     عرض وتحديث الإعدادات المالية العامة للنظام — Singleton.
 

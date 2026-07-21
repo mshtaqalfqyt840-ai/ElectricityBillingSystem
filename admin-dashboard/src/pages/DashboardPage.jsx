@@ -10,9 +10,11 @@ import Confetti from 'react-confetti';
 import { useWindowSize } from 'react-use';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
 import * as XLSX from 'xlsx';
+import { toast } from 'react-hot-toast';
 import PrintableReceipt from '../components/PrintableReceipt';
-import ReportsSection from '../components/ReportsSection';
-import FloorPlanSection from '../components/FloorPlanSection';
+
+const ReportsSection = React.lazy(() => import('../components/ReportsSection'));
+const FloorPlanSection = React.lazy(() => import('../components/FloorPlanSection'));
 import './DashboardPage.css';
 
 export default function DashboardPage() {
@@ -70,7 +72,15 @@ export default function DashboardPage() {
   // فلاتر البحث
   const [buildingFilter, setBuildingFilter] = useState('');
   const [roomFilter, setRoomFilter] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
+  const [activeUsersFilter, setActiveUsersFilter] = useState('all');
+
+  useEffect(() => {
+    if (error) { toast.error(error); setError(''); }
+  }, [error]);
+
+  useEffect(() => {
+    if (success) { toast.success(success); setSuccess(''); }
+  }, [success]);
 
   // حالة الطباعة
   const [invoiceToPrint, setInvoiceToPrint] = useState(null);
@@ -92,9 +102,9 @@ export default function DashboardPage() {
           axiosClient.get('/invoices/')
         ]);
         setBuildings(bRes.data);
-        setRooms(rRes.data);
-        setStudents(sRes.data);
-        setInvoices(iRes.data);
+        setRooms(rRes.data.results || rRes.data);
+        setStudents(sRes.data.results || sRes.data);
+        setInvoices(iRes.data.results || iRes.data);
       } else if (currentTab === 'buildings') {
         const res = await axiosClient.get('/buildings/');
         setBuildings(res.data);
@@ -103,22 +113,22 @@ export default function DashboardPage() {
           axiosClient.get('/rooms/'),
           axiosClient.get('/buildings/')
         ]);
-        setRooms(rRes.data);
+        setRooms(rRes.data.results || rRes.data);
         setBuildings(bRes.data);
       } else if (currentTab === 'students') {
         const [sRes, rRes] = await Promise.all([
           axiosClient.get('/students/'),
           axiosClient.get('/rooms/')
         ]);
-        setStudents(sRes.data);
-        setRooms(rRes.data);
+        setStudents(sRes.data.results || sRes.data);
+        setRooms(rRes.data.results || rRes.data);
       } else if (currentTab === 'invoices') {
         const [iRes, rRes] = await Promise.all([
           axiosClient.get('/invoices/'),
           axiosClient.get('/rooms/')
         ]);
-        setInvoices(iRes.data);
-        setRooms(rRes.data);
+        setInvoices(iRes.data.results || iRes.data);
+        setRooms(rRes.data.results || rRes.data);
       } else if (currentTab === 'users' && user?.role === 'admin') {
         const res = await axiosClient.get('/users/');
         setUsersList(res.data);
@@ -127,8 +137,8 @@ export default function DashboardPage() {
           axiosClient.get('/complaints/'),
           axiosClient.get('/students/')
         ]);
-        setComplaints(cRes.data);
-        setStudents(sRes.data);
+        setComplaints(cRes.data.results || cRes.data);
+        setStudents(sRes.data.results || sRes.data);
       }
     } catch (err) {
       console.error(err);
@@ -146,12 +156,8 @@ export default function DashboardPage() {
   const showNotification = (msg, isSuccess = true) => {
     if (isSuccess) {
       setSuccess(msg);
-      setError('');
-      setTimeout(() => setSuccess(''), 4000);
     } else {
       setError(msg);
-      setSuccess('');
-      setTimeout(() => setError(''), 4000);
     }
   };
 
@@ -540,10 +546,7 @@ export default function DashboardPage() {
           </div>
         </header>
 
-        {/* تنبيهات النجاح والخطأ */}
-        {success && <div className="alert alert-success">{success}</div>}
-        {error && <div className="alert alert-danger">{error}</div>}
-
+        {/* Removed alert divs, handled by react-hot-toast now */}
         {loading ? (
           <div className="loading-container">
             <div className="spinner"></div>
@@ -1004,12 +1007,16 @@ export default function DashboardPage() {
 
             {/* ── قسم التقارير والأرشيف ── */}
             {currentTab === 'reports' && (
-              <ReportsSection width={width} />
+              <React.Suspense fallback={<div className="loading-container"><div className="spinner"></div></div>}>
+                <ReportsSection width={width} />
+              </React.Suspense>
             )}
 
             {/* ── قسم الخريطة التفاعلية ── */}
             {currentTab === 'floor_plan' && (
-              <FloorPlanSection buildings={buildings} />
+              <React.Suspense fallback={<div className="loading-container"><div className="spinner"></div></div>}>
+                <FloorPlanSection buildings={buildings} />
+              </React.Suspense>
             )}
 
             {/* ── 6. قسم المستخدمين (Users) ── */}
