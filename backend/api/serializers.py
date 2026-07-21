@@ -11,18 +11,26 @@ class BuildingSerializer(serializers.ModelSerializer):
 
 class RoomSerializer(serializers.ModelSerializer):
     building_name = serializers.CharField(source='building.name', read_only=True)
+    search_code = serializers.SerializerMethodField()
 
     class Meta:
         model = Room
-        fields = ['id', 'room_number', 'building', 'building_name', 'qr_code']
+        fields = ['id', 'room_number', 'building', 'building_name', 'qr_code', 'search_code']
+
+    def get_search_code(self, obj):
+        # Building code 1 (A) and 2 (B) get '0' + code suffix. Others (like C=3) stay normal.
+        if obj.building.code in ['1', '2']:
+            return f"{obj.room_number}0{obj.building.code}"
+        return str(obj.room_number)
 
 
 class StudentSerializer(serializers.ModelSerializer):
     room_qr = serializers.CharField(source='room.qr_code', read_only=True)
+    room_search_code = serializers.CharField(source='room.search_code', read_only=True)
 
     class Meta:
         model = Student
-        fields = ['id', 'name', 'phone', 'room', 'room_qr', 'status', 'created_at']
+        fields = ['id', 'name', 'phone', 'room', 'room_qr', 'room_search_code', 'status', 'created_at']
         read_only_fields = ['created_at']
 
 
@@ -50,6 +58,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 class InvoiceSerializer(serializers.ModelSerializer):
     room_qr = serializers.CharField(source='room.qr_code', read_only=True)
+    room_search_code = serializers.CharField(source='room.search_code', read_only=True)
     created_by_username = serializers.CharField(source='created_by.username', read_only=True, default=None)
     approved_by_username = serializers.CharField(source='approved_by.username', read_only=True, default=None)
     payment_deadline = serializers.SerializerMethodField()
@@ -57,7 +66,7 @@ class InvoiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Invoice
         fields = [
-            'id', 'room', 'room_qr', 'created_by', 'created_by_username',
+            'id', 'room', 'room_qr', 'room_search_code', 'created_by', 'created_by_username',
             'approved_by', 'approved_by_username', 'reading_old', 'reading_new',
             'consumption', 'unit_price', 'total_amount', 'previous_debt',
             'final_amount', 'is_overdue', 'overdue_fine',
@@ -137,10 +146,11 @@ class LoginSerializer(serializers.Serializer):
 class ComplaintSerializer(serializers.ModelSerializer):
     student_name = serializers.CharField(source='student.name', read_only=True)
     room_qr = serializers.CharField(source='student.room.qr_code', read_only=True)
+    room_search_code = serializers.CharField(source='student.room.search_code', read_only=True)
 
     class Meta:
         model = Complaint
-        fields = ['id', 'student', 'student_name', 'room_qr', 'subject', 'message', 'status', 'created_at']
+        fields = ['id', 'student', 'student_name', 'room_qr', 'room_search_code', 'subject', 'message', 'status', 'created_at']
         read_only_fields = ['created_at', 'status']
 
     def create(self, validated_data):

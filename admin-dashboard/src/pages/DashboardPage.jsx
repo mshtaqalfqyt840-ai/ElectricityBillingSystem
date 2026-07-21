@@ -370,16 +370,16 @@ export default function DashboardPage() {
   // تصفية وتصفح الفواتير والغرف والطلاب
   const filteredRooms = rooms.filter(r => {
     return (!buildingFilter || r.building === parseInt(buildingFilter)) &&
-           (!roomFilter || r.room_number.toString().includes(roomFilter));
+           (!roomFilter || r.room_number.toString().includes(roomFilter) || (r.search_code && r.search_code.includes(roomFilter)));
   });
 
   const filteredInvoices = invoices.filter(i => {
     return (!statusFilter || i.status === statusFilter) &&
-           (!roomFilter || i.room_qr.toLowerCase().includes(roomFilter.toLowerCase()));
+           (!roomFilter || i.room_qr.toLowerCase().includes(roomFilter.toLowerCase()) || (i.room_search_code && i.room_search_code.includes(roomFilter)));
   });
 
   const filteredStudents = students.filter(s => {
-    return (!roomFilter || s.room_qr.toLowerCase().includes(roomFilter.toLowerCase())) &&
+    return (!roomFilter || s.room_qr.toLowerCase().includes(roomFilter.toLowerCase()) || (s.room_search_code && s.room_search_code.includes(roomFilter))) &&
            (!statusFilter || s.status === statusFilter);
   });
 
@@ -742,7 +742,7 @@ export default function DashboardPage() {
                       {filteredRooms.map(r => (
                         <tr key={r.id}>
                           <td data-label="المبنى">{r.building_name}</td>
-                          <td data-label="رقم الغرفة"><strong>الغرفة {r.room_number}</strong></td>
+                          <td data-label="رقم الغرفة"><strong>الغرفة {r.room_number} <small style={{color: '#94a3b8'}}>(بحث: {r.search_code})</small></strong></td>
                           <td data-label="رمز الاستجابة QR Code"><code className="qr-text">{r.qr_code}</code></td>
                           <td data-label="ملصق الباب الذكي">
                             <button 
@@ -1259,7 +1259,7 @@ export default function DashboardPage() {
                 >
                   <option value="">اختر الغرفة للتسكين...</option>
                   {rooms.map(r => (
-                    <option key={r.id} value={r.id}>{r.building_name} - غرفة {r.room_number}</option>
+                    <option key={r.id} value={r.id}>{r.building_name} - غرفة {r.room_number} (بحث: {r.search_code})</option>
                   ))}
                 </select>
               </div>
@@ -1340,7 +1340,7 @@ export default function DashboardPage() {
                 >
                   <option value="">اختر الغرفة...</option>
                   {rooms.map(r => (
-                    <option key={r.id} value={r.id}>{r.building_name} - غرفة {r.room_number} ({r.qr_code})</option>
+                    <option key={r.id} value={r.id}>{r.building_name} - غرفة {r.room_number} ({r.qr_code}) (بحث: {r.search_code})</option>
                   ))}
                 </select>
               </div>
