@@ -27,11 +27,50 @@ class BuildingViewSet(viewsets.ModelViewSet):
     serializer_class = BuildingSerializer
 
     def get_permissions(self):
-        if self.action in ['list', 'retrieve']:
+        if self.action in ['list', 'retrieve', 'floor_plan']:
             permission_classes = [permissions.IsAuthenticated]
         else:
             permission_classes = [IsAdminUser]
         return [permission() for permission in permission_classes]
+
+    @action(detail=True, methods=['get'])
+    def floor_plan(self, request, pk=None):
+        building = self.get_object()
+        rooms = building.rooms.all().prefetch_related('students', 'invoices', 'manual_meter_actions')
+        
+        floor_plan_data = []
+        for room in rooms:
+            student = room.students.filter(status='active').first()
+            latest_invoice = room.invoices.order_by('-created_at').first()
+            latest_action = room.manual_meter_actions.order_by('-performed_at').first()
+            
+            # Determine status
+            room_status = 'gray' # Default if no data
+            if latest_action and latest_action.action_type == 'disconnect':
+                room_status = 'black'
+            elif latest_invoice:
+                if latest_invoice.status == 'paid':
+                    room_status = 'green'
+                else:
+                    room_status = 'red'
+            
+            # Get search_code (reusing logic)
+            search_code = f"{room.room_number}0{building.code}" if building.code in ['1', '2'] else str(room.room_number)
+
+            floor_plan_data.append({
+                'id': room.id,
+                'room_number': room.room_number,
+                'search_code': search_code,
+                'student_name': student.name if student else 'شاغرة',
+                'status': room_status,
+                'consumption': latest_invoice.consumption if latest_invoice else 0.0,
+                'amount_due': latest_invoice.final_amount if latest_invoice else 0.0
+            })
+            
+        return Response({
+            'building': building.name,
+            'rooms': floor_plan_data
+        })
 
 
 class RoomViewSet(viewsets.ModelViewSet):

@@ -12,6 +12,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import * as XLSX from 'xlsx';
 import PrintableReceipt from '../components/PrintableReceipt';
 import ReportsSection from '../components/ReportsSection';
+import FloorPlanSection from '../components/FloorPlanSection';
 import './DashboardPage.css';
 
 export default function DashboardPage() {
@@ -437,6 +438,13 @@ export default function DashboardPage() {
             onClick={() => { setCurrentTab('rooms'); setIsSidebarOpen(false); }}
           >
             🔑 إدارة الغرف
+          </button>
+
+          <button 
+            className={`nav-item ${currentTab === 'floor_plan' ? 'active' : ''}`}
+            onClick={() => { setCurrentTab('floor_plan'); setIsSidebarOpen(false); }}
+          >
+            🗺️ الخريطة التفاعلية
           </button>
 
           <button 
@@ -997,6 +1005,11 @@ export default function DashboardPage() {
             {/* ── قسم التقارير والأرشيف ── */}
             {currentTab === 'reports' && (
               <ReportsSection width={width} />
+            )}
+
+            {/* ── قسم الخريطة التفاعلية ── */}
+            {currentTab === 'floor_plan' && (
+              <FloorPlanSection buildings={buildings} />
             )}
 
             {/* ── 6. قسم المستخدمين (Users) ── */}
