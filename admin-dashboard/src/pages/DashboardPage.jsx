@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import axiosClient from '../api/axiosClient';
@@ -13,8 +13,8 @@ import * as XLSX from 'xlsx';
 import { toast } from 'react-hot-toast';
 import PrintableReceipt from '../components/PrintableReceipt';
 
-const ReportsSection = React.lazy(() => import('../components/ReportsSection'));
-const FloorPlanSection = React.lazy(() => import('../components/FloorPlanSection'));
+const ReportsSection = lazy(() => import('../components/ReportsSection'));
+const FloorPlanSection = lazy(() => import('../components/FloorPlanSection'));
 import './DashboardPage.css';
 
 export default function DashboardPage() {
@@ -1007,16 +1007,16 @@ export default function DashboardPage() {
 
             {/* ── قسم التقارير والأرشيف ── */}
             {currentTab === 'reports' && (
-              <React.Suspense fallback={<div className="loading-container"><div className="spinner"></div></div>}>
+              <Suspense fallback={<div className="loading-container"><div className="spinner"></div></div>}>
                 <ReportsSection width={width} />
-              </React.Suspense>
+              </Suspense>
             )}
 
             {/* ── قسم الخريطة التفاعلية ── */}
             {currentTab === 'floor_plan' && (
-              <React.Suspense fallback={<div className="loading-container"><div className="spinner"></div></div>}>
+              <Suspense fallback={<div className="loading-container"><div className="spinner"></div></div>}>
                 <FloorPlanSection buildings={buildings} />
-              </React.Suspense>
+              </Suspense>
             )}
 
             {/* ── 6. قسم المستخدمين (Users) ── */}
