@@ -9,6 +9,7 @@ from .views import (
 )
 from .views_auth import LoginView
 from .views_reports import FinancialReportView
+from .reports_views import ArchiveReportViewSet
 
 router = DefaultRouter()
 router.register(r'buildings', BuildingViewSet)
@@ -17,6 +18,7 @@ router.register(r'students', StudentViewSet)
 router.register(r'users', UserViewSet)
 router.register(r'invoices', InvoiceViewSet)
 router.register(r'complaints', ComplaintViewSet, basename='complaint')
+router.register(r'archive-reports', ArchiveReportViewSet, basename='archivereport')
 
 urlpatterns = [
     path('', include(router.urls)),

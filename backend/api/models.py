@@ -382,3 +382,37 @@ class AuditLog(models.Model):
 
     def __str__(self):
         return f"{self.get_action_type_display()} - {self.target_model} ({self.target_id})"
+
+class ArchiveReport(models.Model):
+    PERIOD_CHOICES = [
+        ('half_month', 'نصف شهري'),
+        ('month', 'شهري'),
+        ('year', 'سنوي'),
+    ]
+    report_number = models.CharField(max_length=50, unique=True, null=True, blank=True)
+    period_type = models.CharField(max_length=20, choices=PERIOD_CHOICES)
+    report_date = models.DateField(auto_now_add=True)
+    
+    total_kwh_consumption = models.DecimalField(max_digits=15, decimal_places=2, default=0.0)
+    total_amount_due = models.DecimalField(max_digits=15, decimal_places=2, default=0.0)
+    total_service_fees = models.DecimalField(max_digits=15, decimal_places=2, default=0.0)
+    total_paid = models.DecimalField(max_digits=15, decimal_places=2, default=0.0)
+    remaining_balance = models.DecimalField(max_digits=15, decimal_places=2, default=0.0)
+    net_balance = models.DecimalField(max_digits=15, decimal_places=2, default=0.0)
+    
+    expense_station_admin = models.DecimalField(max_digits=15, decimal_places=2, default=0.0)
+    expense_maintenance = models.DecimalField(max_digits=15, decimal_places=2, default=0.0)
+    expense_electricity_committee = models.DecimalField(max_digits=15, decimal_places=2, default=0.0)
+    expense_student_committee = models.DecimalField(max_digits=15, decimal_places=2, default=0.0)
+    expense_other_debts = models.DecimalField(max_digits=15, decimal_places=2, default=0.0)
+    
+    archived_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='archived_reports')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        managed = True
+        db_table = 'archive_reports'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"تقرير {self.get_period_type_display()} - {self.report_date}"

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Building, Room, Student, User, Invoice, SystemSettings, Complaint
+from .models import Building, Room, Student, User, Invoice, SystemSettings, Complaint, AuditLog, ArchiveReport
 from .exceptions import ValidationError as AppValidationError
 
 
@@ -7,6 +7,15 @@ class BuildingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Building
         fields = '__all__'
+
+
+class ArchiveReportSerializer(serializers.ModelSerializer):
+    archived_by_username = serializers.CharField(source='archived_by.username', read_only=True, default=None)
+
+    class Meta:
+        model = ArchiveReport
+        fields = '__all__'
+        read_only_fields = ['created_at', 'report_date']
 
 
 class RoomSerializer(serializers.ModelSerializer):

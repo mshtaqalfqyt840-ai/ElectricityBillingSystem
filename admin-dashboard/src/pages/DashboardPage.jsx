@@ -11,6 +11,7 @@ import { useWindowSize } from 'react-use';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
 import * as XLSX from 'xlsx';
 import PrintableReceipt from '../components/PrintableReceipt';
+import ReportsSection from '../components/ReportsSection';
 import './DashboardPage.css';
 
 export default function DashboardPage() {
@@ -450,6 +451,13 @@ export default function DashboardPage() {
             onClick={() => { setCurrentTab('invoices'); setIsSidebarOpen(false); }}
           >
             📄 فواتير الاستهلاك
+          </button>
+          
+          <button 
+            className={`nav-item ${currentTab === 'reports' ? 'active' : ''}`}
+            onClick={() => { setCurrentTab('reports'); setIsSidebarOpen(false); }}
+          >
+            📊 التقارير والأرشيف
           </button>
 
           <button 
@@ -984,6 +992,11 @@ export default function DashboardPage() {
                 </div>
               </div>
               </>
+            )}
+
+            {/* ── قسم التقارير والأرشيف ── */}
+            {currentTab === 'reports' && (
+              <ReportsSection width={width} />
             )}
 
             {/* ── 6. قسم المستخدمين (Users) ── */}
