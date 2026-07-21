@@ -72,6 +72,7 @@ export default function DashboardPage() {
   // فلاتر البحث
   const [buildingFilter, setBuildingFilter] = useState('');
   const [roomFilter, setRoomFilter] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
   const [activeUsersFilter, setActiveUsersFilter] = useState('all');
 
   useEffect(() => {
