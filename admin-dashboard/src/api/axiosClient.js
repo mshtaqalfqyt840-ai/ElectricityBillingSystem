@@ -9,6 +9,35 @@ const axiosClient = axios.create({
   },
 });
 
+// ── متغيرات للتحكم في تجديد التوكن (منع Race Condition) ──
+let isRefreshing = false;
+let failedQueue = [];
+
+const processQueue = (error, token = null) => {
+  failedQueue.forEach(prom => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve(token);
+    }
+  });
+  failedQueue = [];
+};
+
+// ── دالة تسجيل الخروج الإجباري (مركزية) ──
+const forceLogout = () => {
+  localStorage.removeItem('access_token');
+  localStorage.removeItem('refresh_token');
+  localStorage.removeItem('user');
+  // بدلاً من window.location.href الذي يسبب شاشة سوداء،
+  // نستخدم إعادة تحميل كاملة بعد تنظيف localStorage
+  // هذا يضمن أن React يعيد التحميل من الصفر ويقرأ localStorage فارغ
+  // فيوجه المستخدم لصفحة تسجيل الدخول عبر ProtectedRoute
+  if (window.location.pathname !== '/login') {
+    window.location.replace('/login');
+  }
+};
+
 // ── Request Interceptor: إرفاق التوكن تلقائياً بكل طلب ──
 axiosClient.interceptors.request.use(
   (config) => {
@@ -22,22 +51,36 @@ axiosClient.interceptors.request.use(
 );
 
 // ── Response Interceptor: تجديد التوكن تلقائياً عند انتهائه ──
+// مع حماية كاملة ضد Race Condition
 axiosClient.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
 
-    // لو الرد 401 (غير مصرح) ولم نحاول التجديد مسبقاً
+    // لو الرد 401 (غير مصرح) ولم نحاول التجديد مسبقاً لهذا الطلب
     if (error.response?.status === 401 && !originalRequest._retry) {
+      // لو عملية التجديد جارية بالفعل من طلب آخر، ننتظر نتيجتها
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          failedQueue.push({ resolve, reject });
+        })
+          .then((token) => {
+            originalRequest.headers.Authorization = `Bearer ${token}`;
+            return axiosClient(originalRequest);
+          })
+          .catch((err) => Promise.reject(err));
+      }
+
       originalRequest._retry = true;
 
       const refreshToken = localStorage.getItem('refresh_token');
       if (!refreshToken) {
-        // ما فيه refresh token → نرسل المستخدم لصفحة تسجيل الدخول
-        localStorage.clear();
-        window.location.href = '/login';
+        // ما فيه refresh token → تسجيل خروج إجباري
+        forceLogout();
         return Promise.reject(error);
       }
+
+      isRefreshing = true;
 
       try {
         // نطلب access token جديد باستخدام الـ refresh token
@@ -48,14 +91,19 @@ axiosClient.interceptors.response.use(
         const newAccessToken = response.data.access;
         localStorage.setItem('access_token', newAccessToken);
 
+        // نعالج كل الطلبات المعلقة بالتوكن الجديد
+        processQueue(null, newAccessToken);
+
         // نعيد الطلب الأصلي بالتوكن الجديد
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
         return axiosClient(originalRequest);
       } catch (refreshError) {
         // حتى الـ refresh token انتهت صلاحيته → تسجيل خروج إجباري
-        localStorage.clear();
-        window.location.href = '/login';
+        processQueue(refreshError, null);
+        forceLogout();
         return Promise.reject(refreshError);
+      } finally {
+        isRefreshing = false;
       }
     }
 
